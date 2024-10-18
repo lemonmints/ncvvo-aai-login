@@ -49,6 +49,22 @@ namespace WebApplication1510.Controllers
 
         public ActionResult GetUserByOIB(string oib)
         {
+            User user = GetUserByOIBFromDb(oib);
+
+            if (user != null)
+            {
+                Guid ticketId = InsertAAITicket(user.Id, user.OIB);
+
+                return Json(new { TicketId = ticketId }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return HttpNotFound("Nepostojeći korisnik");
+            }
+        }
+
+        private User GetUserByOIBFromDb(string oib)
+        {
             User user = null;
 
             using (var connection = new SqlConnection(GetConnectionString()))
@@ -75,31 +91,31 @@ namespace WebApplication1510.Controllers
                 }
             }
 
-            if (user != null)
-            {
-                return Json(user, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return HttpNotFound("User not found");
-            }
+            return user;
         }
-        public ActionResult Authorize()
+
+        private Guid InsertAAITicket(int userId, string oib)
         {
-           
+            Guid ticketId = Guid.NewGuid();
+
+            using (var connection = new SqlConnection(GetConnectionString()))
             {
-
-
-                if (Saml20Identity.Current != null)
+                connection.Open();
+                string query = "INSERT INTO AAITicket (Id, UserId, OIB, CreatedAt) VALUES (@Id, @UserId, @OIB, @CreatedAt)";
+                using (var command = new SqlCommand(query, connection))
                 {
-                    Saml20Identity test = Saml20Identity.Current;
-      
+                    command.Parameters.AddWithValue("@Id", ticketId);
+                    command.Parameters.AddWithValue("@UserId", userId.ToString());
+                    command.Parameters.AddWithValue("@OIB", oib);
+                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+
+                    command.ExecuteNonQuery();
                 }
-    
-
-
-                return Json(null, JsonRequestBehavior.AllowGet);
             }
+
+            return ticketId;
         }
+
+
     }
 }
