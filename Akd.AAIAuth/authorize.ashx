@@ -1,0 +1,1 @@
+﻿<%@ WebHandler Language="C#" CodeBehind="authorize.ashx.cs" Class="Akd.AAIAuth.authorize" %>
