@@ -19,5 +19,11 @@ namespace Akd.AAIAuth
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+     
+
     }
+
+
+
 }
