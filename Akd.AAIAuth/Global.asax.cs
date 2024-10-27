@@ -20,7 +20,11 @@ namespace Akd.AAIAuth
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
-     
+        protected void Application_BeginRequest(Object sender, EventArgs e)
+        {
+           
+                HttpContext.Current.Request.ServerVariables["HTTPS"] = "on";
+        }
 
     }
 
